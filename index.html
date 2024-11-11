@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovative Java School Blog</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+        nav {
+            position: fixed; /* Fix the navbar to the top */
+            top: 0;
+            left: -15px;    
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            background-color: #333;
+            color: white;
+            padding: 0px 30px;
+            z-index: 1000;  /*Ensure navbar is above other content */
+        }
+
+        nav h1 a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5em;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 15px;
+            padding: 0px 15px;
+            display: flex;
+            /*gap: 1em;  Adds space between Sign Up and Login */
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5em 1em;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #555; /* Adds a background color on hover */
+        }
+
+        #auth-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 35px; /* Add some padding to avoid navbar overlap */
+        }
+/* Signup Section */
+#signup {
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 40%;
+    max-width: 500px; /* Limit width */
+    margin: 2em auto;
+}
+
+/* Heading Style */
+#signup h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: -0.5em;
+    text-align: center;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Label and Input Styling */
+form label {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 0.5em;
+}
+
+form input {
+    padding: 0.8em;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1em;
+    transition: border-color 0.3s ease;
+}
+
+form input:focus {
+    border-color: #4CAF50; /* Green border on focus */
+    outline: none;
+}
+
+/* OTP Section Styling */
+#otp-section {
+    margin-top: 1em;
+}
+
+#otp-section button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.8em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1em;
+    width: 100%; /* Make the button full-width */
+}
+
+#otp-section button:hover {
+    background-color: #45a049;
+}
+
+/* Submit Button Styling */
+form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.1em;
+    margin-top: 1em;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    #signup {
+        padding: 1.5em;
+        width: 90%;
+    }
+
+    form input {
+        width: 100%;
+    }
+
+    form button {
+        width: 100%;
+    }
+
+    #otp-section button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <h1><a href="index.html">Innovative Java School</a></h1>
+        <ul>
+            <li><a href="#signup">Sign Up</a></li>
+            <li><a href="#login">Login</a></li>
+        </ul>
+    </nav>
+
+    
+    <section id="auth-section">
+        <!-- Signup Section -->
+        <div id="signup">
+            <h2>Sign Up</h2>
+            <form id="signupForm" onsubmit="return validateForm()">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required placeholder="Enter Your Full Name">
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" required placeholder="Enter Your Email">
+    
+                <label for="mobile">Mobile Number:</label>
+                <input type="tel" id="mobile" required pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
+    
+                <label for="password">Password:</label>
+                <input type="password" id="password" required placeholder="Enter Your Password">
+    
+                <!-- OTP Section -->
+                <div id="otp-section">
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" id="otp" placeholder="Enter OTP" required>
+                    <button type="button" id="sendOtpButton" onclick="sendOtp()">Send OTP</button>
+                    <span id="resendOtpLink" onclick="resendOtp()" style="display:none; font-size: 0.8em; cursor: pointer; color: blue; text-decoration: underline; margin-left: 10px;">
+                        Resend OTP <span id="timer"></span>
+                    </span>
+                </div>
+    
+                <button type="submit" id="submitBtn" style="display:none;">Sign Up</button>
+            </form>
+        </div>
+    </section>
+    
+        <!-- Login Section 
+        <div id="login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required>
+    
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required>
+    
+                <button type="submit">Login</button>
+            </form>
+        </div>-->
+
+    
+    <script src="scripts.js"></script>
+    <script>
+        // JavaScript for custom validation feedback
+        function validateForm() {
+            let isValid = true;
+
+            // Validate Name
+            const name = document.getElementById("name");
+            if (name.value.trim() === "") {
+                showError(name, "Name is required");
+                isValid = false;
+            } else {
+                clearError(name);
+            }
+
+            // Validate Email
+            const email = document.getElementById("email");
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!email.value.match(emailPattern)) {
+                showError(email, "Enter a valid email address");
+                isValid = false;
+            } else {
+                clearError(email);
+            }
+
+            // Validate Mobile Number
+            const mobile = document.getElementById("mobile");
+            const mobilePattern = /^[0-9]{10}$/;
+            if (!mobile.value.match(mobilePattern)) {
+                showError(mobile, "Enter a valid 10-digit mobile number");
+                isValid = false;
+            } else {
+                clearError(mobile);
+            }
+
+            // Validate Password
+            const password = document.getElementById("password");
+            if (password.value.length < 6) {  // Minimum password length check
+                showError(password, "Password must be at least 6 characters");
+                isValid = false;
+            } else {
+                clearError(password);
+            }
+
+            return isValid;
+        }
+
+        // Show error message
+        function showError(inputElement, message) {
+            let errorElement = inputElement.nextElementSibling;
+            if (!errorElement || !errorElement.classList.contains("error-message")) {
+                errorElement = document.createElement("div");
+                errorElement.classList.add("error-message");
+                inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+            }
+            errorElement.textContent = message;
+            inputElement.classList.add("invalid");
+        }
+
+        // Clear error message
+        function clearError(inputElement) {
+            let errorElement = inputElement.nextElementSibling;
+            if (errorElement && errorElement.classList.contains("error-message")) {
+                errorElement.textContent = "";
+            }
+            inputElement.classList.remove("invalid");
+        }
+    </script>
+
+
+<script>
+    let otpSentTime = 0; // Time when OTP was sent, in seconds
+    let resendTimeout = null; // Timer reference for OTP resend
+
+    // Function to handle sending OTP
+    function sendOtp() {
+        alert("OTP sent successfully."); // Success message
+
+        // Hide the Send OTP button and show the Resend OTP link after 10 seconds
+        document.getElementById("sendOtpButton").style.display = "none";
+        document.getElementById("submitBtn").style.display = "inline-block";
+        
+        // Show the Resend OTP link and start the timer
+        document.getElementById("resendOtpLink").style.display = "inline";
+        otpSentTime = Math.floor(Date.now() / 1000); // Store the current time in seconds
+        startCountdown();
+    }
+
+    // Start countdown for OTP Resend link
+    function startCountdown() {
+        clearInterval(resendTimeout); // Clear any existing timer
+        resendTimeout = setInterval(function() {
+            let currentTime = Math.floor(Date.now() / 1000);
+            let timeRemaining = 10 - (currentTime - otpSentTime);
+
+            if (timeRemaining <= 0) {
+                clearInterval(resendTimeout);
+                document.getElementById("resendOtpLink").innerHTML = "Resend OTP"; // Enable the link
+                document.getElementById("timer").innerText = ""; // Clear timer text
+            } else {
+                document.getElementById("timer").innerText = ` (${timeRemaining}s)`;
+            }
+        }, 1000);
+    }
+
+    // Resend OTP link clicked
+    function resendOtp() {
+        let currentTime = Math.floor(Date.now() / 1000);
+        let timeRemaining = 10 - (currentTime - otpSentTime);
+
+        if (timeRemaining > 0) {
+            alert(`Please wait ${timeRemaining} seconds before resending OTP.`);
+        } else {
+            // Resend OTP successfully
+            alert("OTP sent successfully.");
+            otpSentTime = Math.floor(Date.now() / 1000); // Reset the sent time
+            document.getElementById("timer").innerText = ""; // Clear any previous timer text
+            startCountdown(); // Restart the timer
+        }
+    }
+
+    // Validate the form
+    function validateForm() {
+        var otp = document.getElementById("otp").value;
+        if (otp === "") {
+            alert("Please enter the OTP.");
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>
