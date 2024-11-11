@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovative Java School Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Login Section Styling */
+        #user-login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+}
+
+#user-login-section #login {
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+#user-login-section #login h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 1.5em;
+    text-align: center;
+}
+
+#user-login-section #login form {
+    display: flex;
+    flex-direction: column;
+}
+
+#user-login-section #login form label {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 0.5em;
+}
+
+#user-login-section #login form input {
+    padding: 0.8em;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1em;
+    transition: border-color 0.3s ease;
+}
+
+#user-login-section #login form input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+#user-login-section #login form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.1em;
+}
+
+#user-login-section #login form button:hover {
+    background-color: #45a049;
+}
+#user-login-section .login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+    font-size: 0.9em;
+}
+
+#user-login-section .login-links a {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#user-login-section .login-links a:hover {
+    color: #45a049;
+    text-decoration: underline;
+}
+
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <h1><a href="index.html">Innovative Java School</a></h1>
+        <ul>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
+    </nav>
+    
+    <section id="user-login-section">
+        <!-- Login Section -->
+        <div id="login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginUsername">Username:</label>
+                <input type="text" id="loginUsername" required>
+    
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" required>
+    
+                <button type="submit">Login</button>
+    
+                <!-- New User and Forgot Password Links -->
+                <div class="login-links">
+                    <a href="signup.html">New User?</a>
+                    <a href="#forgot-password">Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </section>
+        
+    
+    <script src="scripts.js"></script>
+
+
+</body>
+</html>
