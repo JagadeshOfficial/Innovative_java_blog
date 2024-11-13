@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovate Java School Blog</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+    </style>
+</head>
+<body>
+
+     <!-- Header -->
+     <header>
+        <h1><a href="index.html">Innovative Java School</a></h1>
+        <ul>
+           
+            <li><a href="#" id="menu-toggle">Menu</a></li>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="login.html">Login</a></li>
+        </ul>
+    </header>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <span class="close-btn" id="close-sidebar">&times;</span>
+        <div class="menu-item" onclick="toggleSubmenu('submenu1')">Menu Item 1</div>
+        <div class="submenu" id="submenu1">
+            <div class="submenu-item" onclick="toggleSubmenu('sub-submenu1-1')">Submenu 1-1</div>
+            <div class="sub-submenu" id="sub-submenu1-1">
+                <div class="submenu-item">Sub-submenu 1-1-1</div>
+                <div class="submenu-item">Sub-submenu 1-1-2</div>
+            </div>
+            <div class="submenu-item">Submenu 1-2</div>
+        </div>
+        <div class="menu-item" onclick="toggleSubmenu('submenu2')">Menu Item 2</div>
+        <div class="submenu" id="submenu2">
+            <div class="submenu-item">Submenu 2-1</div>
+            <div class="submenu-item">Submenu 2-2</div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sample Blog Post 1 -->
+        <div class="post">
+            <h2>Blog Post Title 1</h2>
+            <p>Published on <strong>November 13, 2024</strong></p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque quis lorem non velit feugiat aliquet. Vivamus at magna id sapien...</p>
+            <a href="#">Read More</a>
+        </div>
+
+        <!-- Sample Blog Post 2 -->
+        <div class="post">
+            <h2>Blog Post Title 2</h2>
+            <p>Published on <strong>November 10, 2024</strong></p>
+            <p>Nullam hendrerit metus et orci congue, nec tincidunt dui tristique. Fusce feugiat justo nec risus auctor, id hendrerit mauris facilisis...</p>
+            <a href="#">Read More</a>
+        </div>
+
+        <!-- Sample Blog Post 3 -->
+        <div class="post">
+            <h2>Blog Post Title 3</h2>
+            <p>Published on <strong>November 8, 2024</strong></p>
+            <p>Quisque at risus vitae nulla facilisis viverra. Ut sed nibh augue. Duis sed odio non turpis dignissim scelerisque vel id odio...</p>
+            <a href="#">Read More</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 My Blog. All Rights Reserved.</p>
+    </footer>
+    <script src="scripts.js"></script>
+    <script>
+    // JavaScript for sidebar and submenu toggle
+
+    const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // Toggle Sidebar on Menu click
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close button in the sidebar (optional)
+        const closeSidebar = document.getElementById('close-sidebar');
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Toggle Submenu
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('active');
+        }
+    </script>
+
+</body>
+</html>

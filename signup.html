@@ -164,7 +164,7 @@
         clearInterval(resendTimeout); // Clear any existing timer
         resendTimeout = setInterval(function() {
             let currentTime = Math.floor(Date.now() / 1000);
-            let timeRemaining = 10 - (currentTime - otpSentTime);
+            let timeRemaining = 30 - (currentTime - otpSentTime);
 
             if (timeRemaining <= 0) {
                 clearInterval(resendTimeout);
@@ -179,7 +179,7 @@
     // Resend OTP link clicked
     function resendOtp() {
         let currentTime = Math.floor(Date.now() / 1000);
-        let timeRemaining = 10 - (currentTime - otpSentTime);
+        let timeRemaining = 30 - (currentTime - otpSentTime);
 
         if (timeRemaining > 0) {
             alert(`Please wait ${timeRemaining} seconds before resending OTP.`);
