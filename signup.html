@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Innovative Java School Blog</title>
+    <title>Innovative Java School</title>
     <link rel="stylesheet" href="styles.css">
-    
 </head>
-
 <body>
-    <!-- Navbar -->
     <nav>
         <h1><a href="index.html">Innovative Java School</a></h1>
         <ul>
@@ -18,189 +15,134 @@
         </ul>
     </nav>
 
-    
     <section id="auth-section">
-        <!-- Signup Section -->
-        <div id="signup">
-            <h2>Sign Up</h2>
-            <form id="signupForm" onsubmit="return validateForm()">
-                <label for="name">Name:</label>
-                <input type="text" id="name" required placeholder="Enter Your Full Name">
-    
-                <label for="email">Email:</label>
-                <input type="email" id="email" required placeholder="Enter Your Email">
-    
-                <label for="mobile">Mobile Number:</label>
-                <input type="tel" id="mobile" required pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number">
-    
-                <label for="password">Password:</label>
-                <input type="password" id="password" required placeholder="Enter Your Password">
-    
-                <!-- OTP Section -->
-                <div id="otp-section">
-                    <label for="otp">Enter OTP:</label>
-                    <input type="text" id="otp" placeholder="Enter OTP" required>
-                    <button type="button" id="sendOtpButton" onclick="sendOtp()">Send OTP</button>
-                    <span id="resendOtpLink" onclick="resendOtp()" style="display:none; font-size: 0.8em; cursor: pointer; color: blue; text-decoration: underline; margin-left: 10px;">
-                        Resend OTP <span id="timer"></span>
-                    </span>
+        <div class="signup-container">
+            <div class="right-panel">
+                <h2>Sign Up</h2>
+                <form id="signupForm" method="post" action="signup.php">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="tel" id="mobile" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group otp-section">
+                        <label for="otp">OTP</label>
+                        <input type="text" id="otp" name="otp" placeholder="Enter OTP">
+                        <button type="button" id="verifyOtp">Verify OTP</button>
+                        <a href="#" id="resendOtp" style="margin-left: 10px; font-size: 0.9em; color: blue;">Resend OTP</a>
+                    </div>
+                    <div class="submit-container">
+                        <button type="button" id="sendOtp" class="submit-btn">Send OTP</button>
+                        <button type="submit" id="submitForm" class="submit-btn" style="display: none;">Submit</button>
+                    </div>
+                </form>
+                <div class="already-user-link">
+                    <p>Already registered? <a href="login.html">Login</a></p>
                 </div>
-    
-                <button type="submit" id="submitBtn" style="display:none;">Sign Up</button>
-
-                 <!-- Already a User Link -->
-            <div class="already-user-link">
-                <a href="login.html">Already a user? Login</a>
             </div>
-            </form>
         </div>
     </section>
-    
-        <!-- Login Section 
-        <div id="login">
-            <h2>Login</h2>
-            <form id="loginForm">
-                <label for="loginUsername">Username:</label>
-                <input type="text" id="loginUsername" required>
-    
-                <label for="loginPassword">Password:</label>
-                <input type="password" id="loginPassword" required>
-    
-                <button type="submit">Login</button>
-            </form>
-        </div>-->
 
-    
-    <script src="scripts.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // JavaScript for custom validation feedback
-        function validateForm() {
-            let isValid = true;
+    $(document).ready(function() {
+        // Send OTP
+        $('#sendOtp').click(function() {
+            $.ajax({
+                url: 'signup.php',
+                type: 'POST',
+                data: {
+                    action: 'send_otp',
+                    'email': $('#email').val()
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    alert(data.message);
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('An error occurred while sending OTP.');
+                }
+            });
+        });
 
-            // Validate Name
-            const name = document.getElementById("name");
-            if (name.value.trim() === "") {
-                showError(name, "Name is required");
-                isValid = false;
-            } else {
-                clearError(name);
-            }
+        // Resend OTP
+        $('#resendOtp').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'signup.php',
+                type: 'POST',
+                data: {
+                    action: 'resend_otp',
+                    'email': $('#email').val()
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    alert(data.message);
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('An error occurred while resending OTP.');
+                }
+            });
+        });
 
-            // Validate Email
-            const email = document.getElementById("email");
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!email.value.match(emailPattern)) {
-                showError(email, "Enter a valid email address");
-                isValid = false;
-            } else {
-                clearError(email);
-            }
+        // Verify OTP
+        $('#verifyOtp').click(function() {
+            $.ajax({
+                url: 'signup.php',
+                type: 'POST',
+                data: {
+                    action: 'verify_otp',
+                    'otp': $('#otp').val()
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    alert(data.message);
+                    if (data.status === 'success') {
+                        $('#sendOtp').hide();
+                        $('#submitForm').show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('An error occurred while verifying OTP.');
+                }
+            });
+        });
 
-            // Validate Mobile Number
-            const mobile = document.getElementById("mobile");
-            const mobilePattern = /^[0-9]{10}$/;
-            if (!mobile.value.match(mobilePattern)) {
-                showError(mobile, "Enter a valid 10-digit mobile number");
-                isValid = false;
-            } else {
-                clearError(mobile);
-            }
-
-            // Validate Password
-            const password = document.getElementById("password");
-            if (password.value.length < 6) {  // Minimum password length check
-                showError(password, "Password must be at least 6 characters");
-                isValid = false;
-            } else {
-                clearError(password);
-            }
-
-            return isValid;
-        }
-
-        // Show error message
-        function showError(inputElement, message) {
-            let errorElement = inputElement.nextElementSibling;
-            if (!errorElement || !errorElement.classList.contains("error-message")) {
-                errorElement = document.createElement("div");
-                errorElement.classList.add("error-message");
-                inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
-            }
-            errorElement.textContent = message;
-            inputElement.classList.add("invalid");
-        }
-
-        // Clear error message
-        function clearError(inputElement) {
-            let errorElement = inputElement.nextElementSibling;
-            if (errorElement && errorElement.classList.contains("error-message")) {
-                errorElement.textContent = "";
-            }
-            inputElement.classList.remove("invalid");
-        }
+        // Form Submission
+        $('#signupForm').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'signup.php',
+                type: 'POST',
+                data: $(this).serialize() + '&action=submit_form',
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    alert(data.message);
+                    if (data.status === 'success') {
+                        window.location.href = 'login.html';
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('An error occurred while submitting the form.');
+                }
+            });
+        });
+    });
     </script>
-
-
-<script>
-    let otpSentTime = 0; // Time when OTP was sent, in seconds
-    let resendTimeout = null; // Timer reference for OTP resend
-
-    // Function to handle sending OTP
-    function sendOtp() {
-        alert("OTP sent successfully."); // Success message
-
-        // Hide the Send OTP button and show the Resend OTP link after 10 seconds
-        document.getElementById("sendOtpButton").style.display = "none";
-        document.getElementById("submitBtn").style.display = "inline-block";
-        
-        // Show the Resend OTP link and start the timer
-        document.getElementById("resendOtpLink").style.display = "inline";
-        otpSentTime = Math.floor(Date.now() / 1000); // Store the current time in seconds
-        startCountdown();
-    }
-
-    // Start countdown for OTP Resend link
-    function startCountdown() {
-        clearInterval(resendTimeout); // Clear any existing timer
-        resendTimeout = setInterval(function() {
-            let currentTime = Math.floor(Date.now() / 1000);
-            let timeRemaining = 30 - (currentTime - otpSentTime);
-
-            if (timeRemaining <= 0) {
-                clearInterval(resendTimeout);
-                document.getElementById("resendOtpLink").innerHTML = "Resend OTP"; // Enable the link
-                document.getElementById("timer").innerText = ""; // Clear timer text
-            } else {
-                document.getElementById("timer").innerText = ` (${timeRemaining}s)`;
-            }
-        }, 1000);
-    }
-
-    // Resend OTP link clicked
-    function resendOtp() {
-        let currentTime = Math.floor(Date.now() / 1000);
-        let timeRemaining = 30 - (currentTime - otpSentTime);
-
-        if (timeRemaining > 0) {
-            alert(`Please wait ${timeRemaining} seconds before resending OTP.`);
-        } else {
-            // Resend OTP successfully
-            alert("OTP sent successfully.");
-            otpSentTime = Math.floor(Date.now() / 1000); // Reset the sent time
-            document.getElementById("timer").innerText = ""; // Clear any previous timer text
-            startCountdown(); // Restart the timer
-        }
-    }
-
-    // Validate the form
-    function validateForm() {
-        var otp = document.getElementById("otp").value;
-        if (otp === "") {
-            alert("Please enter the OTP.");
-            return false;
-        }
-        return true;
-    }
-</script>
 </body>
 </html>

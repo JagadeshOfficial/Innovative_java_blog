@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Compiler</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Online Compiler</h1>
+    <div>
+        <label for="language">Choose a language: </label>
+        <select id="language">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+            <!-- Add more languages as needed -->
+        </select>
+    </div>
+    <div id="editor" style="height: 300px;"></div>
+    <button onclick="runCode()">Run Code</button>
+
+    <div>
+        <h2>Output:</h2>
+        <pre id="output"></pre>
+    </div>
+
+    <div>
+        <h2>Test Cases:</h2>
+        <textarea id="testCases" placeholder="Input test cases here (comma separated)"></textarea>
+        <button onclick="runTestCases()">Run Test Cases</button>
+    </div>
+
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/python"); // Default mode
+
+        function runCode() {
+            let code = editor.getValue();
+            let language = document.getElementById('language').value;
+            document.getElementById('output').textContent = 'Running...';
+
+            // Send code to the server
+            fetch('run_code.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, language: language })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('output').textContent = data.output;
+            })
+            .catch(error => {
+                document.getElementById('output').textContent = 'Error: ' + error.message;
+            });
+        }
+
+        function runTestCases() {
+            let testCases = document.getElementById('testCases').value.split(',').map(test => test.trim());
+            let language = document.getElementById('language').value;
+            let code = editor.getValue();
+
+            // Send code and test cases to the server
+            fetch('run_test_cases.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, language: language, testCases: testCases })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let results = data.results.map((result, index) => `Test Case ${index + 1}: ${result}`).join('\n');
+                document.getElementById('output').textContent = results;
+            })
+            .catch(error => {
+                document.getElementById('output').textContent = 'Error: ' + error.message;
+            });
+        }
+    </script>
+</body>
+</html>
