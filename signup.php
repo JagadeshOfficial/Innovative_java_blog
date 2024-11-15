@@ -1,112 +1,110 @@
 <?php
+session_start();
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
+require 'vendor/autoload.php'; // Adjust path if you're not using Composer
 
-session_start(); // Start session here at the top
+$servername = "localhost"; // Database server
+$username = "root"; // Database username
+$password = "12345"; // Database password
+$dbname = "blog"; // Database name
 
-// Database connection
-$servername = "localhost"; 
-$username = "root";        
-$password = "12345";            
-$dbname = "blog"; 
-
+// Create connection to MySQL database
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check the connection
+// Check if the connection is successful
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Action handling
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $action = $_POST['action'];
 
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] == 'send_otp') {
-            $email = $_POST['email'];
-            $otp = rand(100000, 999999); // Generate 6-digit OTP
-            
-            // Start PHPMailer
-            $mail = new PHPMailer(true);
-            
-            try {
-                $mail->SMTPDebug = 2; // Set to 2 to enable debug output
-                $mail->isSMTP();
-                $mail->Host       = 'smtp.gmail.com';
-                $mail->SMTPAuth   = true;
-                $mail->Username   = 'innovatejavaschool@gmail.com';
-                $mail->Password   = 'your-app-specific-password'; // Replace with your app-specific password
-                $mail->SMTPSecure = 'tls';
-                $mail->Port       = 587;
+    // Send OTP to the user email
+    if ($action == 'send_otp') {
+        $email = $_POST['email'];
+        $otp = rand(100000, 999999); // Generate a random 6-digit OTP
 
-                $mail->setFrom('innovatejavaschool@gmail.com', 'Innovate Java School');
-                $mail->addAddress($email);
+        // Save OTP and expiration time in session
+        $_SESSION['otp'] = $otp;
+        $_SESSION['otp_expiration'] = time() + 300; // OTP valid for 5 minutes
+        $_SESSION['otp_verified'] = false; // Reset OTP verification status
 
-                $mail->isHTML(true);
-                $mail->Subject = 'Your OTP Code';
-                $mail->Body    = 'Your OTP is: <b>' . $otp . '</b>';
-                $mail->AltBody = 'Your OTP is: ' . $otp;
+        // Set up PHPMailer with SMTP
+        $mail = new PHPMailer(true);
+        try {
+            // SMTP configuration
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'innovatejavaschool@gmail.com';
+            $mail->Password = 'tstdfhhaooshctmk';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
 
-                if ($mail->send()) {
-                    // Store OTP and email in session
-                    $_SESSION['otp'] = $otp;
-                    $_SESSION['email'] = $email;
+            // Recipients
+            $mail->setFrom('innovatejavaschool@gmail.com', 'Innovative Java School');
+            $mail->addAddress($email);
 
-                    echo json_encode(['status' => 'success', 'message' => 'OTP has been sent to your email.']);
-                } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Unable to send OTP.']);
-                }
-            } catch (Exception $e) {
-                echo json_encode(['status' => 'error', 'message' => 'Mailer Error: ' . $mail->ErrorInfo]);
-            }
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Your OTP for Sign Up';
+            $mail->Body    = "Your OTP is: <strong>$otp</strong>";
 
-        } elseif ($_POST['action'] == 'verify_otp') {
-            // Verify the OTP entered by the user
-            $input_otp = $_POST['otp'];
-
-            if (isset($_SESSION['otp']) && $_SESSION['otp'] == $input_otp) {
-                echo json_encode(['status' => 'success', 'message' => 'OTP verified successfully.']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Invalid OTP.']);
-            }
-
-        } elseif ($_POST['action'] == 'submit_form') {
-            // Process the form submission after OTP verification
-            $name = $_POST['name'];
-            $email = $_SESSION['email'];
-            $mobile = $_POST['mobile'];
-            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-            // Check if email already exists in the database
-            $check_email_query = "SELECT * FROM users WHERE email = ?";
-            $check_stmt = $conn->prepare($check_email_query);
-            $check_stmt->bind_param("s", $email);
-            $check_stmt->execute();
-            $result = $check_stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                echo json_encode(['status' => 'error', 'message' => 'This email is already registered.']);
-            } else {
-                // Insert the new user data into the database
-                $sql = "INSERT INTO users (name, email, mobile, password) VALUES (?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssss", $name, $email, $mobile, $password);
-
-                if ($stmt->execute()) {
-                    echo json_encode(['status' => 'success', 'message' => 'Form submitted successfully.']);
-                } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Could not save user data.']);
-                }
-
-                $stmt->close();
-            }
-
-            $check_stmt->close();
+            // Send email
+            $mail->send();
+            echo json_encode(['status' => 'success', 'message' => 'OTP sent successfully to your email']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP: ' . $mail->ErrorInfo]);
         }
     }
 
-    $conn->close();
+    // Verify OTP action
+    if ($action == 'verify_otp') {
+        $userOtp = $_POST['otp'];
+
+        // Check if the OTP is correct and not expired
+        if ($_SESSION['otp'] == $userOtp && time() < $_SESSION['otp_expiration']) {
+            $_SESSION['otp_verified'] = true; // Set verification flag
+            echo json_encode(['status' => 'success', 'message' => 'OTP verified successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid OTP or OTP has expired']);
+        }
+    }
+
+    // Submit form action after OTP verification
+    if ($action == 'submit_form') {
+        // Ensure OTP is verified
+        if (!isset($_SESSION['otp_verified']) || $_SESSION['otp_verified'] !== true) {
+            echo json_encode(['status' => 'error', 'message' => 'Please verify your OTP first']);
+            exit();
+        }
+
+        // Get form data
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $mobile = $_POST['mobile'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+        // Insert the user data into the database
+        $sql = "INSERT INTO users (name, email, mobile, password) VALUES ('$name', '$email', '$mobile', '$password')";
+
+        if ($conn->query($sql) === TRUE) {
+            // Clear session variables
+            unset($_SESSION['otp']);
+            unset($_SESSION['otp_expiration']);
+            unset($_SESSION['otp_verified']);
+
+            // Redirect success message
+            echo json_encode(['status' => 'success', 'message' => 'User registered successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error: ' . $conn->error]);
+        }
+    }
 }
+
+$conn->close(); // Close the database connection
 ?>

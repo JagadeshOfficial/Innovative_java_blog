@@ -19,7 +19,7 @@
         <div class="signup-container">
             <div class="right-panel">
                 <h2>Sign Up</h2>
-                <form id="signupForm" method="post" action="signup.php">
+                <form id="signupForm" method="post">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" required>
@@ -40,11 +40,11 @@
                         <label for="otp">OTP</label>
                         <input type="text" id="otp" name="otp" placeholder="Enter OTP">
                         <button type="button" id="verifyOtp">Verify OTP</button>
-                        <a href="#" id="resendOtp" style="margin-left: 10px; font-size: 0.9em; color: blue;">Resend OTP</a>
                     </div>
                     <div class="submit-container">
                         <button type="button" id="sendOtp" class="submit-btn">Send OTP</button>
-                        <button type="submit" id="submitForm" class="submit-btn" style="display: none;">Submit</button>
+                        <button type="button" id="resendOtp" class="submit-btn" style="display: none;">Resend OTP</button>
+                        <button type="submit" id="submitForm" class="submit-btn" style="display: none;">Sign Up</button>
                     </div>
                 </form>
                 <div class="already-user-link">
@@ -64,40 +64,26 @@
                 type: 'POST',
                 data: {
                     action: 'send_otp',
-                    'email': $('#email').val()
+                    email: $('#email').val()
                 },
                 success: function(response) {
                     var data = JSON.parse(response);
                     alert(data.message);
+    
+                    if (data.status === 'success') {
+                        // Hide Send OTP button and show Resend OTP button
+                        $('#sendOtp').hide();
+                        $('#resendOtp').show();
+                        $('#submitForm').hide();  // Hide Sign Up button until OTP verification
+                    }
                 },
-                error: function(xhr, status, error) {
+                error: function(xhr) {
                     console.error(xhr.responseText);
                     alert('An error occurred while sending OTP.');
                 }
             });
         });
-
-        // Resend OTP
-        $('#resendOtp').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: 'signup.php',
-                type: 'POST',
-                data: {
-                    action: 'resend_otp',
-                    'email': $('#email').val()
-                },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    alert(data.message);
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert('An error occurred while resending OTP.');
-                }
-            });
-        });
-
+    
         // Verify OTP
         $('#verifyOtp').click(function() {
             $.ajax({
@@ -105,26 +91,28 @@
                 type: 'POST',
                 data: {
                     action: 'verify_otp',
-                    'otp': $('#otp').val()
+                    otp: $('#otp').val()
                 },
                 success: function(response) {
                     var data = JSON.parse(response);
                     alert(data.message);
+    
                     if (data.status === 'success') {
-                        $('#sendOtp').hide();
+                        // Hide Resend OTP button and show Sign Up button
+                        $('#resendOtp').hide();
                         $('#submitForm').show();
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function(xhr) {
                     console.error(xhr.responseText);
                     alert('An error occurred while verifying OTP.');
                 }
             });
         });
-
-        // Form Submission
+    
+        // Form Submission after OTP verification
         $('#signupForm').submit(function(e) {
-            e.preventDefault();
+            e.preventDefault();  // Prevent default form submission behavior
             $.ajax({
                 url: 'signup.php',
                 type: 'POST',
@@ -133,16 +121,18 @@
                     var data = JSON.parse(response);
                     alert(data.message);
                     if (data.status === 'success') {
+                        // Redirect to login page after successful signup
                         window.location.href = 'login.html';
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function(xhr) {
                     console.error(xhr.responseText);
                     alert('An error occurred while submitting the form.');
                 }
             });
         });
     });
-    </script>
+            </script>
+        
 </body>
 </html>

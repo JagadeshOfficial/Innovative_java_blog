@@ -1,82 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Compiler</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Online Compiler</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#compiler {
+  width: 60%;
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  font-family: monospace;
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+  </style>
 </head>
 <body>
-    <h1>Online Compiler</h1>
-    <div>
-        <label for="language">Choose a language: </label>
-        <select id="language">
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="java">Java</option>
-            <option value="cpp">C++</option>
-            <!-- Add more languages as needed -->
-        </select>
-    </div>
-    <div id="editor" style="height: 300px;"></div>
+  <h1>Online Compiler</h1>
+  <div id="compiler">
+    <select id="language">
+      <option value="java">Java</option>
+      <option value="python3">Python</option>
+      <option value="cpp">C++</option>
+    </select>
+
+    <textarea id="code" placeholder="Write your code here..." rows="10" cols="60"></textarea>
+
+    <textarea id="testCases" placeholder="Enter test cases here..." rows="5" cols="60"></textarea>
+
     <button onclick="runCode()">Run Code</button>
+    <pre id="output"></pre>
+  </div>
 
-    <div>
-        <h2>Output:</h2>
-        <pre id="output"></pre>
-    </div>
+  <script>
+    async function runCode() {
+      const code = document.getElementById("code").value;
+      const language = document.getElementById("language").value;
+      const testCases = document.getElementById("testCases").value.split('\n');
 
-    <div>
-        <h2>Test Cases:</h2>
-        <textarea id="testCases" placeholder="Input test cases here (comma separated)"></textarea>
-        <button onclick="runTestCases()">Run Test Cases</button>
-    </div>
+      const response = await fetch('run.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, language, testCases })
+      });
 
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/monokai");
-        editor.session.setMode("ace/mode/python"); // Default mode
-
-        function runCode() {
-            let code = editor.getValue();
-            let language = document.getElementById('language').value;
-            document.getElementById('output').textContent = 'Running...';
-
-            // Send code to the server
-            fetch('run_code.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: code, language: language })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('output').textContent = data.output;
-            })
-            .catch(error => {
-                document.getElementById('output').textContent = 'Error: ' + error.message;
-            });
-        }
-
-        function runTestCases() {
-            let testCases = document.getElementById('testCases').value.split(',').map(test => test.trim());
-            let language = document.getElementById('language').value;
-            let code = editor.getValue();
-
-            // Send code and test cases to the server
-            fetch('run_test_cases.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: code, language: language, testCases: testCases })
-            })
-            .then(response => response.json())
-            .then(data => {
-                let results = data.results.map((result, index) => `Test Case ${index + 1}: ${result}`).join('\n');
-                document.getElementById('output').textContent = results;
-            })
-            .catch(error => {
-                document.getElementById('output').textContent = 'Error: ' + error.message;
-            });
-        }
-    </script>
+      const result = await response.json();
+      document.getElementById("output").textContent = result.output;
+    }
+  </script>
 </body>
 </html>
